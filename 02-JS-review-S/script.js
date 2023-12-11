@@ -142,3 +142,24 @@ function getBooks() {
 function getBook(id) {
   return data.find((d) => d.id === id);
 }
+
+const books = getBooks();
+const titels = books.map((book) => book.title);
+const longBooks = books.filter((book) => book.pages >= 500);
+longBooks;
+
+const adventureBooks = books
+  .filter((book) => book.genres.includes("adventure"))
+  .map((book) => book.title);
+adventureBooks;
+
+const finalPages = books.reduce((sum, book) => sum + book.pages, 0);
+finalPages;
+
+const x = [3, 7, 1, 9, 6];
+const sortedA = x.slice().sort((a, b) => a - b);
+x;
+sortedA;
+
+const sortedByPages = books.slice().sort((a, b) => b.pages - a.pages);
+sortedByPages;
