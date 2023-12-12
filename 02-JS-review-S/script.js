@@ -163,3 +163,11 @@ sortedA;
 
 const sortedByPages = books.slice().sort((a, b) => b.pages - a.pages);
 sortedByPages;
+
+const getData = async function () {
+  const res = await fetch("https://jsonplaceholder.typicode.com/todos");
+  const data = res.json();
+  console.log(data);
+};
+
+getData();
