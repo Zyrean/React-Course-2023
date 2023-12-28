@@ -7,19 +7,25 @@ const messages = [
 ];
 
 export default function App() {
+  return (
+    <div>
+      <Steps />
+    </div>
+  );
+}
+
+function Steps() {
   const [step, setStep] = useState(1);
   const [isOpen, setIsOpen] = useState(true);
 
   const handleVis = () => (isOpen ? setIsOpen(false) : setIsOpen(true));
 
   const handlePrevious = function () {
-    if (step > 1) setStep(step - 1);
-    console.log(step);
+    if (step > 1) setStep((curStep) => curStep - 1);
   };
 
   const handleNext = function () {
-    if (step < 3) setStep(step + 1);
-    console.log(step);
+    if (step < 3) setStep((curStep) => curStep + 1);
   };
 
   return (
