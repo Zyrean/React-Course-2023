@@ -97,7 +97,7 @@ function Menu() {
 }
 
 function Pizza({ pizzaObj }) {
-  // if (pizzaObj.soldOut) return null;
+  // if (pizzaObj.soldOut) return null;1
 
   return (
     <li className={`pizza ${pizzaObj.soldOut ? "sold-out" : ""}`}>
