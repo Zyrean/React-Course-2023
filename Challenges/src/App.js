@@ -1,97 +1,218 @@
 import { useState } from "react";
 
 export default function App() {
+  const [bill, setBill] = useState(0);
+  const [totalBill, setTotalBill] = useState(0);
+
+  function handleCalcTotalBill(e) {
+    setTotalBill(e);
+  }
+
   return (
     <div>
-      <DateCounter />
+      <Bill bill={bill} handleCalcTotalBill={handleCalcTotalBill} />
+      <Tip handleCalcTotalBill={handleCalcTotalBill}>
+        How did you like the service?
+      </Tip>
+      <Tip>How did your friend like the service?</Tip>
+      <OutputText totalBill={totalBill} />
     </div>
   );
 }
 
-function DateCounter(e) {
-  // e.preventDefault();
-  const [step, setStep] = useState(1);
-  const [count, setCount] = useState(0);
+const tipOptions = [
+  { text: "Dissatisfied (0%)", value: 0 },
+  { text: "It was okay (5%)", value: 5 },
+  { text: "It was good (10%)", value: 10 },
+  { text: "Absolutly amazing (20%)", value: 20 },
+];
 
-  const curDate = new Date();
-  curDate.setDate(curDate.getDate() + count);
+function Bill({ bill, handleCalcTotalBill }) {
+  return (
+    <div className="flex ">
+      <p>How much was the Bill?</p>
+      <input
+        className="border-2 rounded-sm border-black mx-2"
+        type="number"
+        // value={bill}
+        placeholder="0"
+        onFocus={(e) => (e.target.placeholder = "")}
+        onChange={(e) => handleCalcTotalBill(+e.target.value)}
+      />
+    </div>
+  );
+}
 
-  const handleCountPrev = function (e) {
-    e.preventDefault();
-    setCount((curCount) => curCount - step);
-  };
-
-  const handleCountNext = function (e) {
-    e.preventDefault();
-    setCount((curCount) => curCount + step);
-  };
-
-  const handleReset = function () {
-    setStep(1);
-    setCount(0);
-  };
+function Tip({ handleCalcTotalBill, children }) {
+  const [description, setDescription] = useState("TEST");
+  // const
 
   return (
-    <div className="flex flex-col justify-center">
-      <div className="flex justify-center">
-        <input
-          type="range"
-          min={0}
-          max={10}
-          value={step}
-          onChange={(e) => setStep(+e.target.value)}
-        ></input>
-        <span>{step}</span>
-      </div>
-      <div className="flex justify-center">
-        <button
-          className="bg-gray-200 border-2 border-gray-600 rounded-md px-2"
-          onClick={handleCountPrev}
-        >
-          -
-        </button>
-        <input
-          type="text"
-          value={count}
-          onChange={(e) => setCount(+e.target.value)}
-          className="border border-gray-300"
-        ></input>
-        <button
-          className="bg-gray-200 border-2 border-gray-600 rounded-md px-2"
-          onClick={handleCountNext}
-        >
-          +
-        </button>
-      </div>
-      <p className=" text-center font-semibold text-2xl my-4">
-        <span>{count === 0 ? "Today is " : ""}</span>
-        <span>{count > 0 ? `${count} day from today is ` : ""}</span>
-        <span>{count < 0 ? `${Math.abs(count)} days ago was ` : ""}</span>
-        {curDate.toDateString()}
-      </p>
-
-      {count > 0 || step > 1 ? (
-        <button
-          className="bg-gray-200 border border-gray-600 font-semibold px-4 rounded-sm w-20"
-          onClick={() => handleReset()}
-        >
-          Reset
-        </button>
-      ) : null}
-
-      {/* <button
-        className={
-          count > 0 || step > 1
-            ? "bg-gray-200 border border-gray-600 font-semibold px-4 rounded-sm w-20"
-            : "opacity-0"
-        }
-        onClick={() => handleReset()}
+    <div className="flex my-2">
+      <p>{children}</p>
+      <select
+        className="mx-2 border-black border-2"
+        value={""}
+        onChange={(e) => setDescription(e.target.value)}
       >
-        Reset
-      </button> */}
+        {tipOptions.map((option) => (
+          <option
+            value={option.text}
+            key={option.value}
+            onChange={(e) => setDescription(e.target.value)}
+          >
+            {option.text}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
+
+function OutputText({ bill, totalBill }) {
+  return (
+    <div>
+      {totalBill !== 0 || totalBill === "" ? (
+        <div>
+          <h1 className="font-bold text-2xl my-6">
+            You pay $ {totalBill} ($X + $X tip)
+          </h1>
+          <button className="px-8 py-2 border border-black bg-gray-200">
+            Reset
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
+    </div>
+  );
+}
+
+// const fags = [
+//   {
+//     titel: "Where are these chairs assembled?",
+//     text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren",
+//   },
+//   {
+//     titel: "How long do i have to return my chair?",
+//     text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore ",
+//   },
+//   {
+//     titel: "Do you skip the countries outside the EU?",
+//     text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. ",
+//   },
+// ];
+
+// function Accordion({ data }) {
+//   const [curOpen, setCurOpen] = useState(null);
+
+//   return (
+//     <div className="accordion">
+//       {data.map((item, i) => (
+//         <Item
+//           curOpen={curOpen}
+//           onOpen={setCurOpen}
+//           titel={item.titel}
+//           num={i}
+//           key={item.titel}
+//         >
+//           {item.text}
+//         </Item>
+//       ))}
+//     </div>
+//   );
+// }
+
+// function Item({ titel, num, curOpen, onOpen, children }) {
+//   const isActive = num === curOpen;
+
+//   function handleToggle() {
+//     onOpen(isActive ? null : num);
+//   }
+
+//   return (
+//     <div className={isActive ? "item open-box" : "item"} onClick={handleToggle}>
+//       <p className={isActive ? `number open-number` : "number"}>0{num + 1}</p>
+//       <p className={isActive ? `titel open-text` : "titel"}>{titel}</p>
+//       <p className="icon">{isActive ? "-" : "+"}</p>
+//       {isActive && <div className="content-box">{children}</div>}
+//     </div>
+//   );
+// }
+
+// function DateCounter(e) {
+//   // e.preventDefault();
+//   const [step, setStep] = useState(1);
+//   const [count, setCount] = useState(0);
+
+//   const curDate = new Date();
+//   curDate.setDate(curDate.getDate() + count);
+
+//   const handleCountPrev = function (e) {
+//     e.preventDefault();
+//     setCount((curCount) => curCount - step);
+//   };
+
+//   const handleCountNext = function (e) {
+//     e.preventDefault();
+//     setCount((curCount) => curCount + step);
+//   };
+
+//   const handleReset = function () {
+//     setStep(1);
+//     setCount(0);
+//   };
+
+//   return (
+//     <div className="flex flex-col justify-center">
+//       <div className="flex justify-center">
+//         <input
+//           type="range"
+//           min={0}
+//           max={10}
+//           value={step}
+//           onChange={(e) => setStep(+e.target.value)}
+//         ></input>
+//         <span>{step}</span>
+//       </div>
+//       <div className="flex justify-center">
+//         <button
+//           className="bg-gray-200 border-2 border-gray-600 rounded-md px-2"
+//           onClick={handleCountPrev}
+//         >
+//           -
+//         </button>
+//         <input
+//           type="text"
+//           value={count}
+//           onChange={(e) => setCount(+e.target.value)}
+//           className="border border-gray-300"
+//         ></input>
+//         <button
+//           className="bg-gray-200 border-2 border-gray-600 rounded-md px-2"
+//           onClick={handleCountNext}
+//         >
+//           +
+//         </button>
+//       </div>
+//       <p className=" text-center font-semibold text-2xl my-4">
+//         <span>{count === 0 ? "Today is " : ""}</span>
+//         <span>{count > 0 ? `${count} day from today is ` : ""}</span>
+//         <span>{count < 0 ? `${Math.abs(count)} days ago was ` : ""}</span>
+//         {curDate.toDateString()}
+//       </p>
+
+//       {count > 0 || step > 1 ? (
+//         <button
+//           className="bg-gray-200 border border-gray-600 font-semibold px-4 rounded-sm w-20"
+//           onClick={() => handleReset()}
+//         >
+//           Reset
+//         </button>
+//       ) : null}
+//     </div>
+//   );
+// }
 
 //------------------------------------------------------------------------2------------------------------------------------------------------------//
 
