@@ -1,23 +1,7 @@
 import { useState } from "react";
 
 export default function App() {
-  const [bill, setBill] = useState(0);
-  const [totalBill, setTotalBill] = useState(0);
-
-  function handleCalcTotalBill(e) {
-    setTotalBill(e);
-  }
-
-  return (
-    <div>
-      <Bill bill={bill} handleCalcTotalBill={handleCalcTotalBill} />
-      <Tip handleCalcTotalBill={handleCalcTotalBill}>
-        How did you like the service?
-      </Tip>
-      <Tip>How did your friend like the service?</Tip>
-      <OutputText totalBill={totalBill} />
-    </div>
-  );
+  return <TipCalculator />;
 }
 
 const tipOptions = [
@@ -27,39 +11,99 @@ const tipOptions = [
   { text: "Absolutly amazing (20%)", value: 20 },
 ];
 
-function Bill({ bill, handleCalcTotalBill }) {
+function TipCalculator() {
+  const [bill, setBill] = useState("");
+  const [totalBill, setTotalBill] = useState(0);
+  const [tipPercentOwn, setTipPercentOwn] = useState(0);
+  const [tipPercentFriend, setTipPercentFriend] = useState(0);
+
+  function handleCalcTotalBill(e) {
+    setBill(e);
+    setTotalBill(e);
+  }
+
   return (
-    <div className="flex ">
-      <p>How much was the Bill?</p>
-      <input
-        className="border-2 rounded-sm border-black mx-2"
-        type="number"
-        // value={bill}
-        placeholder="0"
-        onFocus={(e) => (e.target.placeholder = "")}
-        onChange={(e) => handleCalcTotalBill(+e.target.value)}
+    <div>
+      <Bill
+        bill={bill}
+        onSetBill={setBill}
+        handleCalcTotalBill={handleCalcTotalBill}
+      />
+      <Tip
+        tipPercentOwn={tipPercentOwn}
+        onTipPercentOwn={setTipPercentOwn}
+        handleCalcTotalBill={handleCalcTotalBill}
+        totalBill={totalBill}
+        setTotalBill={setTotalBill}
+        // setTipPercentOwn={setTipPercentOwn}
+      >
+        How did you like the service?
+      </Tip>
+      <Tip
+        tipPercentFriend={tipPercentFriend}
+        onTipPercentFriend={setTipPercentFriend}
+        handleCalcTotalBill={handleCalcTotalBill}
+        totalBill={totalBill}
+        setTotalBill={setTotalBill}
+        // tipPercentOwn={tipPercentOwn}
+      >
+        How did your friend like the service?
+      </Tip>
+      <OutputText
+        bill={bill}
+        totalBill={totalBill}
+        tipPercentOwn={tipPercentOwn}
+        tipPercentFriend={tipPercentFriend}
       />
     </div>
   );
 }
 
-function Tip({ handleCalcTotalBill, children }) {
-  const [description, setDescription] = useState("TEST");
-  // const
+function Bill({ bill, onSetBill, handleCalcTotalBill }) {
+  return (
+    <div className="flex ">
+      <p>How much was the Bill?</p>
+      <input
+        className="border-2 rounded-sm border-black mx-2"
+        type="text"
+        placeholder="0"
+        value={bill}
+        // onChange={(e) => handleCalcTotalBill(+e.target.value)}
+        onChange={(e) => onSetBill(+e.target.value)}
+      />
+    </div>
+  );
+}
+
+function Tip({
+  tipPercentOwn,
+  setTipPercentOwn,
+  totalBill,
+  setTotalBill,
+  children,
+}) {
+  const [description, setDescription] = useState("");
+
+  function handleDescription(e) {
+    setDescription(e);
+    setTipPercentOwn(0);
+    setTipPercentOwn(e.match(/(\d+)/)[0]);
+    setTotalBill(totalBill + totalBill * tipPercentOwn);
+  }
 
   return (
     <div className="flex my-2">
       <p>{children}</p>
       <select
         className="mx-2 border-black border-2"
-        value={""}
-        onChange={(e) => setDescription(e.target.value)}
+        value={description}
+        onChange={(e) => handleDescription(e.target.value)}
       >
         {tipOptions.map((option) => (
           <option
             value={option.text}
             key={option.value}
-            onChange={(e) => setDescription(e.target.value)}
+            // onChange={(e) => setDescription(e.target.value)}
           >
             {option.text}
           </option>
@@ -69,13 +113,14 @@ function Tip({ handleCalcTotalBill, children }) {
   );
 }
 
-function OutputText({ bill, totalBill }) {
+function OutputText({ bill, totalBill, tipPercentOwn, tipPercentFriend }) {
   return (
     <div>
-      {totalBill !== 0 || totalBill === "" ? (
+      {bill !== 0 || bill === "" ? (
         <div>
           <h1 className="font-bold text-2xl my-6">
-            You pay $ {totalBill} ($X + $X tip)
+            You pay $ {totalBill} ($ {bill} + $ {totalBill / tipPercentFriend}{" "}
+            tip)
           </h1>
           <button className="px-8 py-2 border border-black bg-gray-200">
             Reset
