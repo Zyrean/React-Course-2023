@@ -164,23 +164,6 @@ function Movie({ movie }) {
   );
 }
 
-// function WatchedBox({ children }) {
-//   const [watched, setWatched] = useState(tempWatchedData);
-
-//   function handleIsOpen() {
-//     setIsOpen2((open) => !open);
-//   }
-
-//   return (
-//     <div className="box">
-//       <button className="btn-toggle" onClick={handleIsOpen}>
-//         {isOpen2 ? "–" : "+"}
-//       </button>
-//       {isOpen2 && <>children</>}
-//     </div>
-//   );
-// }
-
 function Summary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));

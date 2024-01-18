@@ -1,97 +1,287 @@
 import { useState } from "react";
 
 export default function App() {
-  return <TipCalculator />;
+  return (
+    <div className="flex flex-col gap-4 my-2">
+      <TextExpander buttonText={"Show more"} textLength={65}>
+        Space traverl is the ultimate adventure! Imagine soaring past the stars
+        and exploring new worlds. It is the stuff of dreams and science fiction,
+        but belive it or not, space travel is a real thing. Humans and robots
+        are constantly venturing out into the cosmos to uncover its secrets and
+        push the boundaries of what is possible.
+      </TextExpander>
+
+      <TextExpander
+        buttonText={"Show text"}
+        buttonColor="orange"
+        textLength={163}
+      >
+        Space travel requires some seriously amazing technology and
+        collaboration between countries, privat companies and international
+        space organizations. And while it's not always easy (or cheap), the
+        seults are out of this world. Think about the first time humans stepped
+        foot on the moon or when rovers were sent to roam around on Mars.
+      </TextExpander>
+
+      <TextExpander
+        textLength={110}
+        defaultIsOpen={true}
+        className={"bg-gray-200 rounded-md border border-gray-500 py-4"}
+      >
+        Space missions have given us incredible insights into our univers and
+        have inspiired future generations to keep reaching for sthe stars. Space
+        travel is a pretty cool thing to think about. Who knows what we'll
+        discover next!
+      </TextExpander>
+    </div>
+  );
 }
 
-const tipOptions = [
-  { text: "Dissatisfied (0%)", value: 0 },
-  { text: "It was okay (5%)", value: 5 },
-  { text: "It was good (10%)", value: 10 },
-  { text: "Absolutly amazing (20%)", value: 20 },
-];
+function TextExpander({
+  textLength = 100,
+  buttonTextOpen = "Show less",
+  buttonTextClose = "Show more",
+  buttonColor = "blue",
+  defaultIsOpen = false,
+  className = {},
+  children,
+}) {
+  const [isOpen, setIsOpen] = useState(defaultIsOpen);
 
-function TipCalculator() {
-  const [bill, setBill] = useState(0);
-  const [tipPercentOwn, setTipPercentOwn] = useState(0);
-  const [tipPercentFriend, setTipPercentFriend] = useState(0);
+  const points = "...";
 
-  const tip = bill * ((tipPercentOwn + tipPercentFriend) / 2 / 100);
+  const displayText = isOpen
+    ? children
+    : children.slice(0, textLength) + points;
 
-  function handleReset() {
-    setBill(0);
-    setTipPercentOwn(0);
-    setTipPercentFriend(0);
+  function handleIsOpen() {
+    setIsOpen((isOpen) => !isOpen);
   }
 
-  return (
-    <div>
-      <Bill bill={bill} onSetBill={setBill} />
-      <Tip percentage={tipPercentOwn} onSelect={setTipPercentOwn}>
-        How did you like the service?
-      </Tip>
-      <Tip percentage={tipPercentFriend} onSelect={setTipPercentFriend}>
-        How did your friend like the service?
-      </Tip>
-      <OutputText bill={bill} tip={tip} onReset={handleReset} />
-    </div>
-  );
-}
+  const textStyle = {
+    color: buttonColor,
+  };
 
-function Bill({ bill, onSetBill }) {
   return (
-    <div className="flex ">
-      <p>How much was the Bill?</p>
-      <input
-        className="border-2 rounded-sm border-black mx-2"
-        type="text"
-        value={bill}
-        onChange={(e) => onSetBill(+e.target.value)}
-      />
-    </div>
-  );
-}
-
-function Tip({ percentage, onSelect, children }) {
-  return (
-    <div className="flex my-2">
-      <p>{children}</p>
-      <select
-        className="mx-2 border-black border-2"
-        value={percentage}
-        onChange={(e) => onSelect(+e.target.value)}
+    <div className={className}>
+      <span>{displayText}</span>
+      <button
+        onClick={handleIsOpen}
+        // style={textStyle}
+        className="ml-2 text-[buttonColor]-300"
       >
-        {tipOptions.map((option) => (
-          <option value={option.value} key={option.value}>
-            {option.text}
-          </option>
-        ))}
-      </select>
+        {isOpen ? buttonTextOpen : buttonTextClose}
+      </button>
     </div>
   );
+
+  // return (
+  //   <div className="my-2">
+  //     {isOpen ? (
+  //       <TextOpen
+  //         buttonColor={buttonColor}
+  //         handleIsOpen={handleIsOpen}
+  //         textStyle={textStyle}
+  //         className={className}
+  //       >
+  //         {children}
+  //       </TextOpen>
+  //     ) : (
+  //       <TextClosed
+  //         buttonText={buttonText}
+  //         buttonColor={buttonColor}
+  //         handleIsOpen={handleIsOpen}
+  //         buttonText={buttonText}
+  //         textLength={textLength}
+  //       >
+  //         {children}
+  //       </TextClosed>
+  //     )}
+  //   </div>
+  // );
 }
 
-function OutputText({ tip, bill, onReset }) {
-  return (
-    <div>
-      {bill !== 0 || bill === "" ? (
-        <div>
-          <h1 className="font-bold text-2xl my-6">
-            You pay $ {bill + tip} ($ {bill} + $ {tip} tip)
-          </h1>
-          <button
-            className="px-8 py-2 border border-black bg-gray-200"
-            onClick={onReset}
-          >
-            Reset
-          </button>
-        </div>
-      ) : (
-        ""
-      )}
-    </div>
-  );
-}
+// function TextOpen({ textColor, handleIsOpen, textStyle, className, children }) {
+//   return (
+//     <div className={className}>
+//       <p>
+//         {children}
+//         <span
+//           className="ml-2 cursor-pointer"
+//           style={textStyle}
+//           onClick={handleIsOpen}
+//           color={textColor}
+//         >
+//           Show less
+//         </span>
+//       </p>
+//     </div>
+//   );
+// }
+
+// function TextClosed({
+//   text,
+//   textColor,
+//   handleIsOpen,
+//   textStyle,
+//   textLength,
+//   children,
+// }) {
+//   const points = "...";
+
+//   return (
+//     <div>
+//       <p>
+//         {children.slice(0, textLength) + `${points}`}
+//         {/* <ActionButton>{children}</ActionButton> */}
+//         <span
+//           className="ml-2 cursor-pointer"
+//           style={textStyle}
+//           onClick={handleIsOpen}
+//           color={textColor}
+//         >
+//           {text}
+//         </span>
+//       </p>
+//     </div>
+//   );
+// }
+
+// function ActionButton() {
+//   return (
+//     <span
+//       className="ml-2 cursor-pointer"
+//       style={textStyle}
+//       onClick={handleIsOpen}
+//       color={textColor}
+//     >
+//       {text}
+//     </span>
+//   );
+// }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// <div className={className}>
+//   <p>
+//     {children}
+//     <span
+//       className="ml-2 cursor-pointer"
+//       style={test}
+//       onClick={handleIsOpen}
+//       color={textColor}
+//     >
+//       Show less
+//     </span>
+//   </p>
+// </div>
+
+// <div>
+//   <p>
+//     {children.slice(0, textLength) + `${points}`}
+//     <span
+//       className="ml-2 cursor-pointer"
+//       style={test}
+//       onClick={handleIsOpen}
+//       color={textColor}
+//     >
+//       {text}
+//     </span>
+//   </p>
+// </div>
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+// export default function App() {
+//   return <TipCalculator />;
+// }
+
+// const tipOptions = [
+//   { text: "Dissatisfied (0%)", value: 0 },
+//   { text: "It was okay (5%)", value: 5 },
+//   { text: "It was good (10%)", value: 10 },
+//   { text: "Absolutly amazing (20%)", value: 20 },
+// ];
+
+// function TipCalculator() {
+//   const [bill, setBill] = useState(0);
+//   const [tipPercentOwn, setTipPercentOwn] = useState(0);
+//   const [tipPercentFriend, setTipPercentFriend] = useState(0);
+
+//   const tip = bill * ((tipPercentOwn + tipPercentFriend) / 2 / 100);
+
+//   function handleReset() {
+//     setBill(0);
+//     setTipPercentOwn(0);
+//     setTipPercentFriend(0);
+//   }
+
+//   return (
+//     <div>
+//       <Bill bill={bill} onSetBill={setBill} />
+//       <Tip percentage={tipPercentOwn} onSelect={setTipPercentOwn}>
+//         How did you like the service?
+//       </Tip>
+//       <Tip percentage={tipPercentFriend} onSelect={setTipPercentFriend}>
+//         How did your friend like the service?
+//       </Tip>
+//       <OutputText bill={bill} tip={tip} onReset={handleReset} />
+//     </div>
+//   );
+// }
+
+// function Bill({ bill, onSetBill }) {
+//   return (
+//     <div className="flex ">
+//       <p>How much was the Bill?</p>
+//       <input
+//         className="border-2 rounded-sm border-black mx-2"
+//         type="text"
+//         value={bill}
+//         onChange={(e) => onSetBill(+e.target.value)}
+//       />
+//     </div>
+//   );
+// }
+
+// function Tip({ percentage, onSelect, children }) {
+//   return (
+//     <div className="flex my-2">
+//       <p>{children}</p>
+//       <select
+//         className="mx-2 border-black border-2"
+//         value={percentage}
+//         onChange={(e) => onSelect(+e.target.value)}
+//       >
+//         {tipOptions.map((option) => (
+//           <option value={option.value} key={option.value}>
+//             {option.text}
+//           </option>
+//         ))}
+//       </select>
+//     </div>
+//   );
+// }
+
+// function OutputText({ tip, bill, onReset }) {
+//   return (
+//     <div>
+//       {bill !== 0 || bill === "" ? (
+//         <div>
+//           <h1 className="font-bold text-2xl my-6">
+//             You pay $ {bill + tip} ($ {bill} + $ {tip} tip)
+//           </h1>
+//           <button
+//             className="px-8 py-2 border border-black bg-gray-200"
+//             onClick={onReset}
+//           >
+//             Reset
+//           </button>
+//         </div>
+//       ) : (
+//         ""
+//       )}
+//     </div>
+//   );
+// }
 
 // const fags = [
 //   {
