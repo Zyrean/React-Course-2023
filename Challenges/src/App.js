@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function App() {
   return (
     <div className="flex flex-col gap-4 my-2">
-      <TextExpander buttonText={"Show more"} textLength={65}>
+      <TextExpander buttonText={"Show more"} collapsNumWords={12}>
         Space traverl is the ultimate adventure! Imagine soaring past the stars
         and exploring new worlds. It is the stuff of dreams and science fiction,
         but belive it or not, space travel is a real thing. Humans and robots
@@ -14,7 +14,7 @@ export default function App() {
       <TextExpander
         buttonText={"Show text"}
         buttonColor="orange"
-        textLength={163}
+        collapsNumWords={16}
       >
         Space travel requires some seriously amazing technology and
         collaboration between countries, privat companies and international
@@ -24,7 +24,7 @@ export default function App() {
       </TextExpander>
 
       <TextExpander
-        textLength={110}
+        collapsNumWords={10}
         defaultIsOpen={true}
         className={"bg-gray-200 rounded-md border border-gray-500 py-4"}
       >
@@ -38,7 +38,7 @@ export default function App() {
 }
 
 function TextExpander({
-  textLength = 100,
+  collapsNumWords = 10,
   buttonTextOpen = "Show less",
   buttonTextClose = "Show more",
   buttonColor = "blue",
@@ -52,7 +52,7 @@ function TextExpander({
 
   const displayText = isOpen
     ? children
-    : children.slice(0, textLength) + points;
+    : children.split(" ").slice(0, collapsNumWords).join(" ") + points;
 
   function handleIsOpen() {
     setIsOpen((isOpen) => !isOpen);
@@ -65,11 +65,7 @@ function TextExpander({
   return (
     <div className={className}>
       <span>{displayText}</span>
-      <button
-        onClick={handleIsOpen}
-        // style={textStyle}
-        className="ml-2 text-[buttonColor]-300"
-      >
+      <button style={textStyle} onClick={handleIsOpen} className="ml-2 ">
         {isOpen ? buttonTextOpen : buttonTextClose}
       </button>
     </div>
@@ -92,7 +88,7 @@ function TextExpander({
   //         buttonColor={buttonColor}
   //         handleIsOpen={handleIsOpen}
   //         buttonText={buttonText}
-  //         textLength={textLength}
+  //         collapsNumWords={collapsNumWords}
   //       >
   //         {children}
   //       </TextClosed>
@@ -124,7 +120,7 @@ function TextExpander({
 //   textColor,
 //   handleIsOpen,
 //   textStyle,
-//   textLength,
+//   collapsNumWords,
 //   children,
 // }) {
 //   const points = "...";
@@ -132,7 +128,7 @@ function TextExpander({
 //   return (
 //     <div>
 //       <p>
-//         {children.slice(0, textLength) + `${points}`}
+//         {children.slice(0, collapsNumWords) + `${points}`}
 //         {/* <ActionButton>{children}</ActionButton> */}
 //         <span
 //           className="ml-2 cursor-pointer"
@@ -177,7 +173,7 @@ function TextExpander({
 
 // <div>
 //   <p>
-//     {children.slice(0, textLength) + `${points}`}
+//     {children.slice(0, collapsNumWords) + `${points}`}
 //     <span
 //       className="ml-2 cursor-pointer"
 //       style={test}
