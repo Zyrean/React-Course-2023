@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 const containerStyle = {
   display: "flex",
-  aligneItems: "center",
+  alignItems: "center",
   gap: "16px",
 };
 
@@ -47,24 +47,21 @@ export default function StarRating({
   }
 
   return (
-    <div>
-      <div style={containerStyle}>
-        <div style={starContainerStyle}>
-          {Array.from({ length: maxRating }, (_, i) => (
-            <Star
-              key={i}
-              onRate={() => handleStarRating(i)}
-              onHoverIn={() => handleHoverStarRating(i + 1)}
-              onHoverOut={() => handleHoverStarRating(0)}
-              full={hoverRating ? hoverRating >= i + 1 : rating >= i + 1}
-              color={color}
-              size={size}
-            />
-          ))}
-        </div>
-        <p style={textStyle}>{hoverRating || rating || ""}</p>
+    <div style={containerStyle}>
+      <div style={starContainerStyle}>
+        {Array.from({ length: maxRating }, (_, i) => (
+          <Star
+            key={i}
+            onRate={() => handleStarRating(i)}
+            onHoverIn={() => handleHoverStarRating(i + 1)}
+            onHoverOut={() => handleHoverStarRating(0)}
+            full={hoverRating ? hoverRating >= i + 1 : rating >= i + 1}
+            color={color}
+            size={size}
+          />
+        ))}
       </div>
-      <button>+ Add to list</button>
+      <p style={textStyle}>{hoverRating || rating || ""}</p>
     </div>
   );
 }
