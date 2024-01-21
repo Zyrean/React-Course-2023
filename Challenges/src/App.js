@@ -1,101 +1,190 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import SelectCurrency from "./SelectCurrency";
+import ErrorMsg from "./ErrorMsg";
+
+// API `https://api.frankfurter.app/latest?amount=100&from=EUR&to=USD`
 
 export default function App() {
-  return (
-    <div className="flex flex-col gap-4 my-2">
-      <TextExpander buttonText={"Show more"} collapsNumWords={12}>
-        Space traverl is the ultimate adventure! Imagine soaring past the stars
-        and exploring new worlds. It is the stuff of dreams and science fiction,
-        but belive it or not, space travel is a real thing. Humans and robots
-        are constantly venturing out into the cosmos to uncover its secrets and
-        push the boundaries of what is possible.
-      </TextExpander>
+  const [inputNum, setInputNum] = useState();
+  const [currencyFrom, setCurrencyFrom] = useState("EUR");
+  const [currencyTo, setCurrencyTo] = useState("USD");
+  const [test, setTest] = useState({});
 
-      <TextExpander
-        buttonText={"Show text"}
-        buttonColor="orange"
-        collapsNumWords={16}
-      >
-        Space travel requires some seriously amazing technology and
-        collaboration between countries, privat companies and international
-        space organizations. And while it's not always easy (or cheap), the
-        seults are out of this world. Think about the first time humans stepped
-        foot on the moon or when rovers were sent to roam around on Mars.
-      </TextExpander>
+  const [error, setError] = useState("");
+  // const [result, setResult] = useState();
 
-      <TextExpander
-        collapsNumWords={10}
-        defaultIsOpen={true}
-        className={"bg-gray-200 rounded-md border border-gray-500 py-4"}
-      >
-        Space missions have given us incredible insights into our univers and
-        have inspiired future generations to keep reaching for sthe stars. Space
-        travel is a pretty cool thing to think about. Who knows what we'll
-        discover next!
-      </TextExpander>
-    </div>
-  );
-}
-
-function TextExpander({
-  collapsNumWords = 10,
-  buttonTextOpen = "Show less",
-  buttonTextClose = "Show more",
-  buttonColor = "blue",
-  defaultIsOpen = false,
-  className = {},
-  children,
-}) {
-  const [isOpen, setIsOpen] = useState(defaultIsOpen);
-
-  const points = "...";
-
-  const displayText = isOpen
-    ? children
-    : children.split(" ").slice(0, collapsNumWords).join(" ") + points;
-
-  function handleIsOpen() {
-    setIsOpen((isOpen) => !isOpen);
+  function handleSum(e) {
+    setInputNum(() => e.target.value);
   }
 
-  const textStyle = {
-    color: buttonColor,
-  };
+  function handleCurFrom(currency) {
+    setCurrencyFrom(() => currency);
+  }
 
-  return (
-    <div className={className}>
-      <span>{displayText}</span>
-      <button style={textStyle} onClick={handleIsOpen} className="ml-2 ">
-        {isOpen ? buttonTextOpen : buttonTextClose}
-      </button>
-    </div>
+  useEffect(
+    function () {
+      async function fetchGetCurRatio() {
+        try {
+          const res = await fetch(
+            `https://api.frankfurter.app/latest?amount=${inputNum}&from=${currencyFrom}&to=${currencyTo}`
+          );
+
+          if (!res) throw new Error("Problem getting data");
+
+          const data = await res.json();
+          // console.log(data);
+          // console.log(data.rates);
+
+          setTest(data.rates);
+        } catch (error) {
+          // setError(error.message);
+          console.log(error);
+        }
+      }
+      fetchGetCurRatio();
+    },
+    [inputNum, currencyFrom, currencyTo]
   );
 
-  // return (
-  //   <div className="my-2">
-  //     {isOpen ? (
-  //       <TextOpen
-  //         buttonColor={buttonColor}
-  //         handleIsOpen={handleIsOpen}
-  //         textStyle={textStyle}
-  //         className={className}
-  //       >
-  //         {children}
-  //       </TextOpen>
-  //     ) : (
-  //       <TextClosed
-  //         buttonText={buttonText}
-  //         buttonColor={buttonColor}
-  //         handleIsOpen={handleIsOpen}
-  //         buttonText={buttonText}
-  //         collapsNumWords={collapsNumWords}
-  //       >
-  //         {children}
-  //       </TextClosed>
-  //     )}
-  //   </div>
-  // );
+  return (
+    <div className="flex flex-col ml-2 mt-2 gap-2">
+      <div className="flex gap-1">
+        <input
+          onChange={handleSum}
+          type="text"
+          className="border border-black rounded-sm"
+        />
+        {/* <SelectCurrency
+          onCurFrom={handleCurFrom}
+          inputNum={inputNum}
+        />
+        <SelectCurrency /> */}
+        <select
+          onChange={(e) => handleCurFrom(e.target.value)}
+          className="border border-black rounded-sm"
+        >
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="CAD">CAD</option>
+          <option value="INR">INR</option>
+        </select>
+        <select
+          onChange={(e) => setCurrencyTo(e.target.value)}
+          className="border border-black rounded-sm"
+        >
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="CAD">CAD</option>
+          <option value="INR">INR</option>
+        </select>
+      </div>
+
+      <p>FROM: {currencyFrom}</p>
+      <p>TO: {currencyTo}</p>
+      {/* <p>{test}</p> */}
+
+      {/* <ErrorMsg message={"hallo"} /> */}
+      {/* <ErrorMsg message={error} /> */}
+    </div>
+  );
 }
+
+// export default function App() {
+//   return (
+//     <div className="flex flex-col gap-4 my-2">
+//       <TextExpander buttonText={"Show more"} collapsNumWords={12}>
+//         Space traverl is the ultimate adventure! Imagine soaring past the stars
+//         and exploring new worlds. It is the stuff of dreams and science fiction,
+//         but belive it or not, space travel is a real thing. Humans and robots
+//         are constantly venturing out into the cosmos to uncover its secrets and
+//         push the boundaries of what is possible.
+//       </TextExpander>
+
+//       <TextExpander
+//         buttonText={"Show text"}
+//         buttonColor="orange"
+//         collapsNumWords={16}
+//       >
+//         Space travel requires some seriously amazing technology and
+//         collaboration between countries, privat companies and international
+//         space organizations. And while it's not always easy (or cheap), the
+//         seults are out of this world. Think about the first time humans stepped
+//         foot on the moon or when rovers were sent to roam around on Mars.
+//       </TextExpander>
+
+//       <TextExpander
+//         collapsNumWords={10}
+//         defaultIsOpen={true}
+//         className={"bg-gray-200 rounded-md border border-gray-500 py-4"}
+//       >
+//         Space missions have given us incredible insights into our univers and
+//         have inspiired future generations to keep reaching for sthe stars. Space
+//         travel is a pretty cool thing to think about. Who knows what we'll
+//         discover next!
+//       </TextExpander>
+//     </div>
+//   );
+// }
+
+// function TextExpander({
+//   collapsNumWords = 10,
+//   buttonTextOpen = "Show less",
+//   buttonTextClose = "Show more",
+//   buttonColor = "blue",
+//   defaultIsOpen = false,
+//   className = {},
+//   children,
+// }) {
+//   const [isOpen, setIsOpen] = useState(defaultIsOpen);
+
+//   const points = "...";
+
+//   const displayText = isOpen
+//     ? children
+//     : children.split(" ").slice(0, collapsNumWords).join(" ") + points;
+
+//   function handleIsOpen() {
+//     setIsOpen((isOpen) => !isOpen);
+//   }
+
+//   const textStyle = {
+//     color: buttonColor,
+//   };
+
+//   return (
+//     <div className={className}>
+//       <span>{displayText}</span>
+//       <button style={textStyle} onClick={handleIsOpen} className="ml-2 ">
+//         {isOpen ? buttonTextOpen : buttonTextClose}
+//       </button>
+//     </div>
+//   );
+
+// return (
+//   <div className="my-2">
+//     {isOpen ? (
+//       <TextOpen
+//         buttonColor={buttonColor}
+//         handleIsOpen={handleIsOpen}
+//         textStyle={textStyle}
+//         className={className}
+//       >
+//         {children}
+//       </TextOpen>
+//     ) : (
+//       <TextClosed
+//         buttonText={buttonText}
+//         buttonColor={buttonColor}
+//         handleIsOpen={handleIsOpen}
+//         buttonText={buttonText}
+//         collapsNumWords={collapsNumWords}
+//       >
+//         {children}
+//       </TextClosed>
+//     )}
+//   </div>
+// );
+// }
 
 // function TextOpen({ textColor, handleIsOpen, textStyle, className, children }) {
 //   return (
