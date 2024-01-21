@@ -8,7 +8,7 @@ export default function App() {
   const [inputNum, setInputNum] = useState();
   const [currencyFrom, setCurrencyFrom] = useState("EUR");
   const [currencyTo, setCurrencyTo] = useState("USD");
-  const [test, setTest] = useState({});
+  const [test, setTest] = useState([]);
 
   const [error, setError] = useState("");
   // const [result, setResult] = useState();
@@ -32,10 +32,13 @@ export default function App() {
           if (!res) throw new Error("Problem getting data");
 
           const data = await res.json();
-          // console.log(data);
+          console.log(data);
           // console.log(data.rates);
-
-          setTest(data.rates);
+          const { rates } = data;
+          const [penis] = Object.values(rates);
+          console.log(rates);
+          console.log(penis);
+          setTest(Object.values(rates));
         } catch (error) {
           // setError(error.message);
           console.log(error);
@@ -81,7 +84,7 @@ export default function App() {
 
       <p>FROM: {currencyFrom}</p>
       <p>TO: {currencyTo}</p>
-      {/* <p>{test}</p> */}
+      <p>{test}</p>
 
       {/* <ErrorMsg message={"hallo"} /> */}
       {/* <ErrorMsg message={error} /> */}
