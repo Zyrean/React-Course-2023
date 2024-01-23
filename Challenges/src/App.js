@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import SelectCurrency from "./SelectCurrency";
 import ErrorMsg from "./ErrorMsg";
+import LoadingMsg from "./LoadingMsg";
 
 // API `https://api.frankfurter.app/latest?amount=100&from=EUR&to=USD`
 
@@ -8,23 +9,29 @@ export default function App() {
   const [inputNum, setInputNum] = useState();
   const [currencyFrom, setCurrencyFrom] = useState("EUR");
   const [currencyTo, setCurrencyTo] = useState("USD");
-  const [test, setTest] = useState([]);
+  const [convertedNum, setConvertedNum] = useState("");
 
   const [error, setError] = useState("");
-  // const [result, setResult] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleSum(e) {
-    setInputNum(() => e.target.value);
+    setInputNum(() => Number(e.target.value));
   }
 
   function handleCurFrom(currency) {
     setCurrencyFrom(() => currency);
   }
 
+  function handleCurTo(currency) {
+    setCurrencyTo(() => currency);
+  }
+
   useEffect(
     function () {
       async function fetchGetCurRatio() {
         try {
+          setIsLoading(true);
+          setError("");
           const res = await fetch(
             `https://api.frankfurter.app/latest?amount=${inputNum}&from=${currencyFrom}&to=${currencyTo}`
           );
@@ -32,16 +39,17 @@ export default function App() {
           if (!res) throw new Error("Problem getting data");
 
           const data = await res.json();
-          console.log(data);
-          // console.log(data.rates);
-          const { rates } = data;
-          const [penis] = Object.values(rates);
-          console.log(rates);
-          console.log(penis);
-          setTest(Object.values(rates));
+
+          if (currencyFrom === currencyTo) {
+            setConvertedNum(inputNum);
+            throw new Error("Cant convert same currency");
+          }
+
+          setError("");
+          setConvertedNum(data.rates[currencyTo]);
+          setIsLoading(false);
         } catch (error) {
-          // setError(error.message);
-          console.log(error);
+          setError(error.message);
         }
       }
       fetchGetCurRatio();
@@ -50,19 +58,19 @@ export default function App() {
   );
 
   return (
-    <div className="flex flex-col ml-2 mt-2 gap-2">
-      <div className="flex gap-1">
+    <div className="flex flex-col ml-2 mt-2">
+      <ErrorMsg message={error} />
+
+      <div className="flex gap-1 mb-2">
         <input
-          onChange={handleSum}
           type="text"
-          className="border border-black rounded-sm"
+          onChange={handleSum}
+          className="border border-black rounded-sm "
         />
-        {/* <SelectCurrency
-          onCurFrom={handleCurFrom}
-          inputNum={inputNum}
-        />
-        <SelectCurrency /> */}
+
         <select
+          value={currencyFrom}
+          disabled={isLoading}
           onChange={(e) => handleCurFrom(e.target.value)}
           className="border border-black rounded-sm"
         >
@@ -71,8 +79,11 @@ export default function App() {
           <option value="CAD">CAD</option>
           <option value="INR">INR</option>
         </select>
+
         <select
-          onChange={(e) => setCurrencyTo(e.target.value)}
+          value={currencyTo}
+          disabled={isLoading}
+          onChange={(e) => handleCurTo(e.target.value)}
           className="border border-black rounded-sm"
         >
           <option value="USD">USD</option>
@@ -80,14 +91,27 @@ export default function App() {
           <option value="CAD">CAD</option>
           <option value="INR">INR</option>
         </select>
+
+        {/* <SelectCurrency
+          currency={currencyFrom}
+          isLoading={isLoading}
+          onCurFrom={handleCurFrom}
+        />
+
+        <SelectCurrency
+          currency={currencyTo}
+          isLoading={isLoading}
+          onCurFrom={handleCurTo}
+        /> */}
       </div>
 
-      <p>FROM: {currencyFrom}</p>
-      <p>TO: {currencyTo}</p>
-      <p>{test}</p>
-
-      {/* <ErrorMsg message={"hallo"} /> */}
-      {/* <ErrorMsg message={error} /> */}
+      {inputNum && convertedNum ? (
+        <p className="font-semibold">
+          {convertedNum} {currencyTo}
+        </p>
+      ) : (
+        <LoadingMsg message="Loading data!!!" />
+      )}
     </div>
   );
 }

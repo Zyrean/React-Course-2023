@@ -1,9 +1,10 @@
-export default function SelectCurrency({ onCurFrom }) {
-  //   console.log(inputNum);
+export default function SelectCurrency({ currency, isLoading, onCurFrom }) {
   return (
     <select
-      //   onChange={onCurFrom((e) => e.target.value)}
-      //   onChange={onCurFrom(e.target.value)}
+      onChange={() => onCurFrom("")}
+      // value={currency}
+      defaultValue={currency}
+      disabled={isLoading}
       className="border border-black rounded-sm"
     >
       <option value="USD">USD</option>
