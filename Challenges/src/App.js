@@ -1,120 +1,149 @@
-import { useEffect, useState } from "react";
-import SelectCurrency from "./SelectCurrency";
-import ErrorMsg from "./ErrorMsg";
-import LoadingMsg from "./LoadingMsg";
-
-// API `https://api.frankfurter.app/latest?amount=100&from=EUR&to=USD`
+import { useState } from "react";
+import useGeolocation from "./useGeolocation";
 
 export default function App() {
-  const [inputNum, setInputNum] = useState();
-  const [currencyFrom, setCurrencyFrom] = useState("EUR");
-  const [currencyTo, setCurrencyTo] = useState("USD");
-  const [convertedNum, setConvertedNum] = useState("");
+  const {
+    isLoading,
+    position: { lat, lng },
+    error,
+    getPosition,
+  } = useGeolocation();
 
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [countClicks, setCountClicks] = useState(0);
 
-  function handleSum(e) {
-    setInputNum(() => Number(e.target.value));
+  function handleClick() {
+    setCountClicks((count) => count + 1);
+    getPosition();
   }
-
-  function handleCurFrom(currency) {
-    setCurrencyFrom(() => currency);
-  }
-
-  function handleCurTo(currency) {
-    setCurrencyTo(() => currency);
-  }
-
-  useEffect(
-    function () {
-      async function fetchGetCurRatio() {
-        try {
-          setIsLoading(true);
-          setError("");
-          const res = await fetch(
-            `https://api.frankfurter.app/latest?amount=${inputNum}&from=${currencyFrom}&to=${currencyTo}`
-          );
-
-          if (!res) throw new Error("Problem getting data");
-
-          const data = await res.json();
-
-          if (currencyFrom === currencyTo) {
-            setConvertedNum(inputNum);
-            throw new Error("Cant convert same currency");
-          }
-
-          setError("");
-          setConvertedNum(data.rates[currencyTo]);
-          setIsLoading(false);
-        } catch (error) {
-          setError(error.message);
-        }
-      }
-      fetchGetCurRatio();
-    },
-    [inputNum, currencyFrom, currencyTo]
-  );
 
   return (
-    <div className="flex flex-col ml-2 mt-2">
-      <ErrorMsg message={error} />
+    <div className="flex flex-col gap-y-4">
+      <button
+        className="border border-black px-2 py-2"
+        onClick={handleClick}
+        disabled={isLoading}
+      >
+        Get my position
+      </button>
 
-      <div className="flex gap-1 mb-2">
-        <input
-          type="text"
-          onChange={handleSum}
-          className="border border-black rounded-sm "
-        />
-
-        <select
-          value={currencyFrom}
-          disabled={isLoading}
-          onChange={(e) => handleCurFrom(e.target.value)}
-          className="border border-black rounded-sm"
-        >
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="CAD">CAD</option>
-          <option value="INR">INR</option>
-        </select>
-
-        <select
-          value={currencyTo}
-          disabled={isLoading}
-          onChange={(e) => handleCurTo(e.target.value)}
-          className="border border-black rounded-sm"
-        >
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="CAD">CAD</option>
-          <option value="INR">INR</option>
-        </select>
-
-        {/* <SelectCurrency
-          currency={currencyFrom}
-          isLoading={isLoading}
-          onCurFrom={handleCurFrom}
-        />
-
-        <SelectCurrency
-          currency={currencyTo}
-          isLoading={isLoading}
-          onCurFrom={handleCurTo}
-        /> */}
-      </div>
-
-      {inputNum && convertedNum ? (
-        <p className="font-semibold">
-          {convertedNum} {currencyTo}
+      {isLoading && <p>Loading position...</p>}
+      {error && <p>{error}</p>}
+      {!isLoading && !error && lat && lng && (
+        <p>
+          Your GPS position:{" "}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href={`https://www.openstreetmap.org/#map=16/${lat}/${lng}`}
+          >
+            {lat}, {lng}
+          </a>
         </p>
-      ) : (
-        <LoadingMsg message="Loading data!!!" />
       )}
+
+      <p>You requested position {countClicks} times</p>
     </div>
   );
 }
+
+// export default function App() {
+//   const [inputNum, setInputNum] = useState();
+//   const [currencyFrom, setCurrencyFrom] = useState("EUR");
+//   const [currencyTo, setCurrencyTo] = useState("USD");
+//   const [convertedNum, setConvertedNum] = useState("");
+
+//   const [error, setError] = useState("");
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   function handleSum(e) {
+//     setInputNum(() => Number(e.target.value));
+//   }
+
+//   function handleCurFrom(currency) {
+//     setCurrencyFrom(() => currency);
+//   }
+
+//   function handleCurTo(currency) {
+//     setCurrencyTo(() => currency);
+//   }
+
+//   useEffect(
+//     function () {
+//       async function fetchGetCurRatio() {
+//         try {
+//           setIsLoading(true);
+//           setError("");
+//           const res = await fetch(
+//             `https://api.frankfurter.app/latest?amount=${inputNum}&from=${currencyFrom}&to=${currencyTo}`
+//           );
+
+//           if (!res) throw new Error("Problem getting data");
+
+//           const data = await res.json();
+
+//           if (currencyFrom === currencyTo) {
+//             setConvertedNum(inputNum);
+//             throw new Error("Cant convert same currency");
+//           }
+
+//           setError("");
+//           setConvertedNum(data.rates[currencyTo]);
+//           setIsLoading(false);
+//         } catch (error) {
+//           setError(error.message);
+//         }
+//       }
+//       fetchGetCurRatio();
+//     },
+//     [inputNum, currencyFrom, currencyTo]
+//   );
+
+//   return (
+//     <div className="flex flex-col ml-2 mt-2">
+//       <ErrorMsg message={error} />
+
+//       <div className="flex gap-1 mb-2">
+//         <input
+//           type="text"
+//           onChange={handleSum}
+//           className="border border-black rounded-sm "
+//         />
+
+//         <select
+//           value={currencyFrom}
+//           disabled={isLoading}
+//           onChange={(e) => handleCurFrom(e.target.value)}
+//           className="border border-black rounded-sm"
+//         >
+//           <option value="USD">USD</option>
+//           <option value="EUR">EUR</option>
+//           <option value="CAD">CAD</option>
+//           <option value="INR">INR</option>
+//         </select>
+
+//         <select
+//           value={currencyTo}
+//           disabled={isLoading}
+//           onChange={(e) => handleCurTo(e.target.value)}
+//           className="border border-black rounded-sm"
+//         >
+//           <option value="USD">USD</option>
+//           <option value="EUR">EUR</option>
+//           <option value="CAD">CAD</option>
+//           <option value="INR">INR</option>
+//         </select>
+//       </div>
+
+//       {inputNum && convertedNum ? (
+//         <p className="font-semibold">
+//           {convertedNum} {currencyTo}
+//         </p>
+//       ) : (
+//         <LoadingMsg message="Loading data!!!" />
+//       )}
+//     </div>
+//   );
+// }
 
 // export default function App() {
 //   return (
