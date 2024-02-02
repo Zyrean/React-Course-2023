@@ -138,7 +138,7 @@ function Box({ handleIsOpen, children }) {
   );
 }
 
-function MovieList({ movies, onSelectMovie }) {
+function xMovieList({ movies, onSelectMovie }) {
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
@@ -251,6 +251,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
             `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
           );
           const data = await res.json();
+          console.log(data);
           setMovie(data);
           setIsLoading(false);
         } catch (error) {
