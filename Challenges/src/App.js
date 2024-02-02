@@ -1,50 +1,172 @@
-import { useState } from "react";
-import useGeolocation from "./useGeolocation";
+// import { useState } from "react";
+// import useGeolocation from "./useGeolocation";
+import BankAccountAll from "./BankAccountAll";
+import Information from "./Information";
+import ActionButton from "./ActionButton";
+import Header from "./Header";
+import { useReducer } from "react";
+
+const initialState = {
+  balance: 0,
+  loan: 0,
+  status: "closed",
+  activeLoan: false,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "closedAccount":
+      return { ...initialState };
+
+    case "openAccount":
+      return { ...state, balance: 500, status: "opened" };
+
+    case "deposit":
+      return { ...state, balance: state.balance + 150 };
+
+    case "withdraw":
+      return {
+        ...state,
+        balance: state.balance >= 50 ? state.balance - 50 : state.balance,
+      };
+
+    case "requestLoan":
+      return !state.activeLoan
+        ? {
+            ...state,
+            balance: state.balance + 5000,
+            loan: state.loan + 5000,
+            activeLoan: true,
+          }
+        : { ...state };
+
+    case "payLoan":
+      return state.balance >= 5000 && state.loan !== 0
+        ? {
+            ...state,
+            balance: state.balance - 5000,
+            loan: state.loan - 5000,
+            activeLoan: false,
+          }
+        : { ...state };
+
+    case "closeAccount":
+      return !state.balance && !state.loan ? { ...initialState } : { ...state };
+
+    default:
+      throw new Error("ACTION NOT DEFINED");
+  }
+}
 
 export default function App() {
-  const {
-    isLoading,
-    position: { lat, lng },
-    error,
-    getPosition,
-  } = useGeolocation();
-
-  const [countClicks, setCountClicks] = useState(0);
-
-  function handleClick() {
-    setCountClicks((count) => count + 1);
-    getPosition();
-  }
+  const [{ balance, loan, status }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+  console.log(balance, loan, status);
 
   return (
-    <div className="flex flex-col gap-y-4">
-      <button
-        className="border border-black px-2 py-2"
-        onClick={handleClick}
-        disabled={isLoading}
-      >
-        Get my position
-      </button>
+    <div className="flex flex-col items-center gap-y-6">
+      <Header />
 
-      {isLoading && <p>Loading position...</p>}
-      {error && <p>{error}</p>}
-      {!isLoading && !error && lat && lng && (
-        <p>
-          Your GPS position:{" "}
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={`https://www.openstreetmap.org/#map=16/${lat}/${lng}`}
+      <Information type={balance}>Balance</Information>
+      <Information type={loan}>Loan</Information>
+
+      <BankAccountAll>
+        {status === "closed"}
+        <>
+          <ActionButton
+            dispatch={dispatch}
+            dispatchType={"openAccount"}
+            isDisabled={status === "closed" ? false : true}
           >
-            {lat}, {lng}
-          </a>
-        </p>
-      )}
-
-      <p>You requested position {countClicks} times</p>
+            Open account
+          </ActionButton>
+          <ActionButton
+            dispatch={dispatch}
+            dispatchType={"deposit"}
+            isDisabled={status === "closed" ? true : false}
+          >
+            Deposit 150
+          </ActionButton>
+          <ActionButton
+            dispatch={dispatch}
+            dispatchType={"withdraw"}
+            isDisabled={status === "closed" ? true : false}
+          >
+            Withdraw 50
+          </ActionButton>
+          <ActionButton
+            dispatch={dispatch}
+            dispatchType={"requestLoan"}
+            isDisabled={status === "closed" ? true : false}
+          >
+            Request a loan of 5000
+          </ActionButton>
+          <ActionButton
+            dispatch={dispatch}
+            dispatchType={"payLoan"}
+            isDisabled={status === "closed" ? true : false}
+          >
+            Pay loan
+          </ActionButton>
+          <ActionButton
+            dispatch={dispatch}
+            dispatchType={"closeAccount"}
+            isDisabled={status === "closed" ? true : false}
+          >
+            Close account
+          </ActionButton>
+        </>
+      </BankAccountAll>
     </div>
   );
 }
+
+// export default function App() {
+//   const {
+//     isLoading,
+//     position: { lat, lng },
+//     error,
+//     getPosition,
+//   } = useGeolocation();
+
+//   const [countClicks, setCountClicks] = useState(0);
+
+//   function handleClick() {
+//     setCountClicks((count) => count + 1);
+//     getPosition();
+//   }
+
+//   return (
+//     <div className="flex flex-col gap-y-4">
+//       <button
+//         className="border border-black px-2 py-2"
+//         onClick={handleClick}
+//         disabled={isLoading}
+//       >
+//         Get my position
+//       </button>
+
+//       {isLoading && <p>Loading position...</p>}
+//       {error && <p>{error}</p>}
+//       {!isLoading && !error && lat && lng && (
+//         <p>
+//           Your GPS position:{" "}
+//           <a
+//             target="_blank"
+//             rel="noreferrer"
+//             href={`https://www.openstreetmap.org/#map=16/${lat}/${lng}`}
+//           >
+//             {lat}, {lng}
+//           </a>
+//         </p>
+//       )}
+
+//       <p>You requested position {countClicks} times</p>
+//     </div>
+//   );
+// }
 
 // export default function App() {
 //   const [inputNum, setInputNum] = useState();
