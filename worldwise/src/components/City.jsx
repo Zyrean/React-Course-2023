@@ -1,4 +1,8 @@
+import { useParams, useNavigate } from "react-router-dom";
 import styles from "./City.module.css";
+import Button from "./Button";
+import { useCities } from "../context/CitiesContext";
+import { useEffect } from "react";
 
 const formatDate = (date) =>
   new Intl.DateTimeFormat("en", {
@@ -9,13 +13,17 @@ const formatDate = (date) =>
   }).format(new Date(date));
 
 function City() {
-  // TEMP DATA
-  const currentCity = {
-    cityName: "Lisbon",
-    emoji: "🇵🇹",
-    date: "2027-10-31T15:59:59.138Z",
-    notes: "My favorite city so far!",
-  };
+  const { id } = useParams();
+  const { getCity, currentCity } = useCities();
+  const navigate = useNavigate();
+  console.log(id);
+
+  useEffect(
+    function () {
+      getCity(id);
+    },
+    [id]
+  );
 
   const { cityName, emoji, date, notes } = currentCity;
 
@@ -52,7 +60,15 @@ function City() {
       </div>
 
       <div>
-        <ButtonBack />
+        <Button
+          type="back"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
+        >
+          Back
+        </Button>
       </div>
     </div>
   );
