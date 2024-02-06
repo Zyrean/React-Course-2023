@@ -1,8 +1,4 @@
-import { useQuiz } from "../context/QuizContext";
-
-export default function NextButton() {
-  const { index, numQuestions, dispatch, answer } = useQuiz();
-
+export default function NextButton({ index, numQuestions, dispatch, answer }) {
   if (answer === null) return null;
 
   if (index < numQuestions - 1)
