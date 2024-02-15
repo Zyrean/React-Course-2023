@@ -4,6 +4,10 @@ import { formatCurrency } from "../../utilities/helpers";
 function MenuItem({ pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
 
+  function handleAddToCard() {
+    console.log(id);
+  }
+
   return (
     <li className="flex gap-4 py-2">
       <img
@@ -24,7 +28,11 @@ function MenuItem({ pizza }) {
               Sold out
             </p>
           )}
-          <Button type="small">Add to card</Button>
+          {!soldOut && (
+            <Button type="small" onClick={handleAddToCard}>
+              Add to card
+            </Button>
+          )}
         </div>
       </div>
     </li>
